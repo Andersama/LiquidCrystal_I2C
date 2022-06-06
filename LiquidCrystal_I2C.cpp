@@ -69,15 +69,11 @@ void LiquidCrystal_I2C::init_priv()
 }
 
 void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
-	if (lines > 1) {
-		_displayfunction |= LCD_2LINE;
-	}
+	_displayfunction |= (lines > 1) ? LCD_2LINE : 0;
 	_numlines = lines;
 
 	// for some 1 line displays you can select a 10 pixel high font
-	if ((dotsize != 0) && (lines == 1)) {
-		_displayfunction |= LCD_5x10DOTS;
-	}
+	_displayfunction |= ((dotsize != 0) && (lines == 1)) ? LCD_5x10DOTS : 0;
 
 	// SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
 	// according to datasheet, we need at least 40ms after power rises above 2.7V
@@ -142,9 +138,7 @@ void LiquidCrystal_I2C::home(){
 
 void LiquidCrystal_I2C::setCursor(uint8_t col, uint8_t row){
 	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
-	if ( row > _numlines ) {
-		row = _numlines-1;    // we count rows starting w/0
-	}
+	row = (row > _numlines) ? _numlines-1 : row; // we count rows starting w/0
 	command(LCD_SETDDRAMADDR | (col + row_offsets[row]));
 }
 
